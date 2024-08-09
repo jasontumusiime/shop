@@ -1,0 +1,40 @@
+.DS_Store
+.idea
+
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+migrations/
+local_settings.py
+!gitkeep.txt
+
+# Static and Media - Never Changing Static Assets and User Generated Content #
+staticfiles/
+media/
+
+# Environments #
+.env
+.venv
+env/
+ENV/
+env.bak/
+venv/
+venv.bak/
+virtual_env/
+
+# Visual Studio and Visual Studio Code #
+*.suo
+*.pyproj.user
+*.history
+.vs/
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+obj/
+
+geckodriver.log

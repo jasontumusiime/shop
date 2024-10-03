@@ -118,3 +118,26 @@ def remove_cart_item(request, product_id, cart_item_id):
   cart_item = CartItem.objects.get(cart=cart, product=product, id=cart_item_id)
   cart_item.delete()
   return redirect('cart')
+
+
+def checkout(request, total=0, quantity=0, cart_items=None):
+  try:
+    tax = grand_total = 0
+    cart = Cart.objects.get(cart_id=cart_id(request))
+    cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+    for item in cart_items:
+      total += item.product.price * item.quantity
+      quantity += item.quantity
+    tax = (2 / 100) * total
+    grand_total = total + tax
+  except ObjectDoesNotExist:
+    pass
+
+  context = { 
+    'total': total, 
+    'quantity': quantity, 
+    'cart_items': cart_items, 
+    'grand_total': grand_total,
+    'tax': tax,
+  }
+  return render(request, 'store/checkout.html', context)

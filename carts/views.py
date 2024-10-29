@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -9,7 +10,7 @@ from . models import Cart, CartItem
 
 from django.http import HttpResponse
 
-@staticmethod
+
 def cart_id(request):
   cart = request.session.session_key
   if not cart:
@@ -76,8 +77,11 @@ def add_cart(request, product_id):
 def cart(request, total=0, quantity=0, cart_items=None):
   try:
     tax = grand_total = 0
-    cart = Cart.objects.get(cart_id=cart_id(request))
-    cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+    if request.user.is_authenticated:
+      cart_items = CartItem.objects.filter(user=request.user)
+    else:
+      cart = Cart.objects.get(cart_id=cart_id(request))
+      cart_items = CartItem.objects.filter(cart=cart, is_active=True)
     for item in cart_items:
       total += item.product.price * item.quantity
       quantity += item.quantity
@@ -119,7 +123,7 @@ def remove_cart_item(request, product_id, cart_item_id):
   cart_item.delete()
   return redirect('cart')
 
-
+@login_required(login_url='login')
 def checkout(request, total=0, quantity=0, cart_items=None):
   try:
     tax = grand_total = 0

@@ -57,7 +57,7 @@ def register(request):
   context = { 'form': form,}
   return render(request, 'accounts/register.html', context)
 
-
+# TODO: Remove business login out of controllers
 def login(request):
   if request.method == 'POST':
     email = request.POST['email']
@@ -67,15 +67,36 @@ def login(request):
     if user is not None:
       try:
         cart = Cart.objects.get(cart_id=cart_id(request))
-        cart_items_exist = CartItem.objects.filter(cart=cart).exists()
-        if cart_items_exist:
-          cart_items = CartItem.objects.filter(cart=cart)
+        anon_cart_items = CartItem.objects.filter(cart=cart)
+        if anon_cart_items.exists():
 
-          for item in cart_items:
+          anon_variations, anon_items = [], {}
+          for item in anon_cart_items:
+            anon_variations.append(list(item.variations.all()))
+            anon_items[item.id] = item
+
+          existn_varitions, existn_item_ids = [], []
+          existn_cart_items = CartItem.objects.filter(user=user)
+          for item in existn_cart_items:
+            existn_varitions.append(list(item.variations.all()))
+            existn_item_ids.append(item.id)
+
+          for variation in anon_variations:
+            if variation in existn_varitions:
+              index = existn_varitions.index(variation)
+              item_id = existn_item_ids[index]
+              item = CartItem.objects.get(id=item_id)
+              item.quantity += 1
+            else:
+              index = anon_variations.index(variation)
+              item = anon_items[index]
+
             item.user = user
             item.save()
-      except:
-        pass
+              
+      except Exception as e:
+        raise e
+      
       auth.login(request, user)
       messages.success(request, "Successfully loggedin!")
       return redirect('dashboard')

@@ -9,7 +9,6 @@ def counter(request):
     return {}
   else:
     try:
-      print(f'User: {request.user}')
       if request.user.is_authenticated:
         cart_items = CartItem.objects.filter(user=request.user)
       else:

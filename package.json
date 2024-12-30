@@ -1,5 +1,7 @@
 {
-  "scripts": {  "watch:css": "tailwindcss build static/css/tailwind.css -o static/output.css -w"},
+  "scripts": {  
+    "watch:css": "tailwindcss build static/css/tailwind.css -o static/output.css -w"
+  },
   "devDependencies": {
     "tailwindcss": "^3.4.17"
   }
